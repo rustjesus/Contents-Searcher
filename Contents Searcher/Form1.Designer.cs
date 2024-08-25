@@ -42,6 +42,7 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.altSearchButton1 = new System.Windows.Forms.Button();
             this.resultsCountLabel = new System.Windows.Forms.Label();
+            this.progLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // searchLocationBox1
@@ -170,11 +171,21 @@
             this.resultsCountLabel.TabIndex = 14;
             this.resultsCountLabel.Text = "Results: 324325345";
             // 
+            // progLabel
+            // 
+            this.progLabel.AutoSize = true;
+            this.progLabel.Location = new System.Drawing.Point(3, 514);
+            this.progLabel.Name = "progLabel";
+            this.progLabel.Size = new System.Drawing.Size(33, 13);
+            this.progLabel.TabIndex = 15;
+            this.progLabel.Text = "Done";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(947, 565);
+            this.Controls.Add(this.progLabel);
             this.Controls.Add(this.resultsCountLabel);
             this.Controls.Add(this.altSearchButton1);
             this.Controls.Add(this.progressBar1);
@@ -213,6 +224,7 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button altSearchButton1;
         private System.Windows.Forms.Label resultsCountLabel;
+        private System.Windows.Forms.Label progLabel;
     }
 }
 

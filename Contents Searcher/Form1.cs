@@ -30,6 +30,7 @@ namespace Contents_Searcher
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            progLabel.Text = "Waiting.";
             results = 0;
             resultsCountLabel.Text = "Results = " + results;
             fileTypesTextBox1.Text = fileTypes;
@@ -112,6 +113,7 @@ namespace Contents_Searcher
                 }
 
                 int verticalPosition = 10; // Initial vertical position for the first button
+                UpdateProgressBar(0, 1); // Initialize progress bar with a minimum and maximum of 1
 
                 foreach (string file in files)
                 {
@@ -130,6 +132,7 @@ namespace Contents_Searcher
 
                             results++;
                             resultsCountLabel.Text = "Results = " + results;
+                            UpdateProgressBar(results, results); // Update both value and maximum
                             // Create a button for this file
                             Button openButton = new Button
                             {
@@ -172,6 +175,7 @@ namespace Contents_Searcher
                 searchResults.Add(result);
                 consoleOutRichTextBox1.Text = result;
             }
+            progLabel.Text = "Done!";
         }
         private void SearchInFolderDeep(string currentFolder)
         {
@@ -234,6 +238,7 @@ namespace Contents_Searcher
                 }
 
                 int verticalPosition = 10; // Initial vertical position for the first button
+                UpdateProgressBar(0, 1); // Initialize progress bar with a minimum and maximum of 1
 
                 foreach (string file in files)
                 {
@@ -249,7 +254,9 @@ namespace Contents_Searcher
                             searchResults.Add(result);
 
                             results++;
-                            resultsCountLabel.Text = "Results = " + results;
+                            resultsCountLabel.Text = "Results = " + results; 
+                            UpdateProgressBar(results, results); // Update both value and maximum
+
                             // Create a button for this file
                             Button openButton = new Button
                             {
@@ -292,6 +299,7 @@ namespace Contents_Searcher
                 searchResults.Add(result);
                 consoleOutRichTextBox1.Text = result;
             }
+            progLabel.Text = "Done!";
         }
 
         private void OpenButton_Click(object sender, EventArgs e)
@@ -326,9 +334,23 @@ namespace Contents_Searcher
             searchString = searchStringTextBox1.Text;
         }
 
-        private void searchButton1_Click(object sender, EventArgs e)
+        private async void searchButton1_Click(object sender, EventArgs e)
         {
+            progLabel.Text = "SEARCHING...";
+            consoleOutRichTextBox1.Text = "SEARCHING...";
+            // Add a 0.01-second delay
+            await Task.Delay(10);
             SearchInFolderDeep(folderPath); 
+            consoleOutRichTextBox1.Text = string.Join(Environment.NewLine, searchResults);
+        }
+        private async void altSearchButton1_Click(object sender, EventArgs e)
+        {
+
+            progLabel.Text = "SEARCHING...";
+            consoleOutRichTextBox1.Text = "SEARCHING...";
+            // Add a 0.01-second delay
+            await Task.Delay(10);
+            SearchInFolderRootIncluded(folderPath);
             consoleOutRichTextBox1.Text = string.Join(Environment.NewLine, searchResults);
         }
 
@@ -338,11 +360,5 @@ namespace Contents_Searcher
             fileTypes = fileTypesTextBox1.Text;
         }
 
-        private void altSearchButton1_Click(object sender, EventArgs e)
-        {
-
-            SearchInFolderRootIncluded(folderPath);
-            consoleOutRichTextBox1.Text = string.Join(Environment.NewLine, searchResults);
-        }
     }
 }
