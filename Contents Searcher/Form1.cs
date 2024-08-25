@@ -24,18 +24,18 @@ namespace Contents_Searcher
         private string searchString = ""; // The string to check for.
         private bool caseSensitive = false; // Toggle for case sensitivity
         private bool recursiveSearch = true; // Toggle for recursive searching
-        private string fileTypes = ".h,.cpp"; // Default file types to search, comma-separated
+        private string fileTypes = ".h,.cpp,.txt,.cs,.py"; // Default file types to search, comma-separated
         private string result;
         private List<string> searchResults = new List<string>();
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            fileTypesTextBox1.Text = fileTypes;
             // Assuming you have already set up your Form and controls in the designer.
             // Make sure the panel is set up with AutoScroll enabled.
             panelButtons.AutoScroll = true;
         }
-
-        private void SearchInFolder(string currentFolder)
+        private void SearchInFolderRootIncluded(string currentFolder)
         {
             searchResults.Clear(); // Clear previous search results
             panelButtons.Controls.Clear(); // Clear previous buttons
@@ -44,7 +44,7 @@ namespace Contents_Searcher
             SearchOption searchOption = recursiveSearch ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
             // Define the directories to skip
-            var directoriesToSkip = new List<string>
+            var directoriesToSkip = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "System Volume Information",
         "Recycler",
@@ -58,13 +58,46 @@ namespace Contents_Searcher
 
                 try
                 {
-                    // Collect files, handling unauthorized access
-                    files.AddRange(Directory.EnumerateFiles(currentFolder, "*.*", searchOption)
+                    // Log current folder being searched
+                    Console.WriteLine($"Searching in directory: {currentFolder}");
+
+                    // Collect files in the current directory
+                    files.AddRange(Directory.EnumerateFiles(currentFolder, "*.*", SearchOption.TopDirectoryOnly)
                         .Where(file => extensions.Any(ext => file.EndsWith(ext.Trim(), comparisonType))));
+
+                    // Collect files in subdirectories
+                    foreach (var dir in Directory.EnumerateDirectories(currentFolder, "*", SearchOption.AllDirectories))
+                    {
+                        var dirName = new DirectoryInfo(dir).Name;
+                        if (!directoriesToSkip.Contains(dirName))
+                        {
+                            try
+                            {
+                                files.AddRange(Directory.EnumerateFiles(dir, "*.*", SearchOption.TopDirectoryOnly)
+                                    .Where(file => extensions.Any(ext => file.EndsWith(ext.Trim(), comparisonType))));
+                            }
+                            catch (UnauthorizedAccessException ex)
+                            {
+                                // Log or handle the exception as needed
+                                Console.WriteLine($"UnauthorizedAccessException accessing directory {dir}: {ex.Message}");
+                            }
+                            catch (Exception ex)
+                            {
+                                // Catch other potential exceptions
+                                Console.WriteLine($"Exception accessing directory {dir}: {ex.Message}");
+                            }
+                        }
+                    }
                 }
-                catch (UnauthorizedAccessException)
+                catch (UnauthorizedAccessException ex)
                 {
-                    // Handle or log the exception as needed
+                    // Log or handle the exception as needed
+                    Console.WriteLine($"UnauthorizedAccessException: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    // Catch other potential exceptions
+                    Console.WriteLine($"Exception: {ex.Message}");
                 }
 
                 int verticalPosition = 10; // Initial vertical position for the first button
@@ -73,17 +106,22 @@ namespace Contents_Searcher
                 {
                     try
                     {
+                        Console.WriteLine($"Checking file: {file}");
+
                         string fileContent = File.ReadAllText(file);
                         if (fileContent.IndexOf(searchString, comparisonType) >= 0)
                         {
-                            string result = $"Found matching content in file: {file}";
+                            // Normalize the path to ensure consistent use of backslashes
+                            string normalizedPath = Path.GetFullPath(file);
+
+                            string result = $"Found matching content in file: {normalizedPath}";
                             searchResults.Add(result);
 
                             // Create a button for this file
                             Button openButton = new Button
                             {
                                 Text = $"Open: {Path.GetFileName(file)}",
-                                Tag = file, // Store the file path in the Tag
+                                Tag = normalizedPath, // Store the file path in the Tag
                                 AutoSize = true,
                                 Margin = new Padding(1),
                                 Location = new Point(1, verticalPosition) // Set the location dynamically
@@ -99,19 +137,143 @@ namespace Contents_Searcher
                             panelButtons.Controls.Add(openButton);
                         }
                     }
-                    catch (UnauthorizedAccessException)
+                    catch (UnauthorizedAccessException ex)
                     {
-                        // Handle or log the exception as needed
+                        // Log or handle the exception as needed
+                        Console.WriteLine($"UnauthorizedAccessException while reading file: {file}, Exception: {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Catch other potential exceptions
+                        Console.WriteLine($"Exception while reading file: {file}, Exception: {ex.Message}");
                     }
                 }
 
                 // Adjust the scroll range of the panel based on the total height of the buttons
                 panelButtons.AutoScrollMinSize = new Size(0, verticalPosition);
+                consoleOutRichTextBox1.Text = string.Join(Environment.NewLine, searchResults);
             }
             else
             {
                 string result = "Folder does not exist: " + currentFolder;
                 searchResults.Add(result);
+                consoleOutRichTextBox1.Text = result;
+            }
+        }
+        private void SearchInFolder(string currentFolder)
+        {
+            searchResults.Clear(); // Clear previous search results
+            panelButtons.Controls.Clear(); // Clear previous buttons
+
+            StringComparison comparisonType = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+            SearchOption searchOption = recursiveSearch ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+
+            // Define the directories to skip
+            var directoriesToSkip = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "System Volume Information",
+        "Recycler",
+        "$RECYCLE.BIN"
+    };
+
+            if (Directory.Exists(currentFolder))
+            {
+                string[] extensions = fileTypes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                List<string> files = new List<string>();
+
+                try
+                {
+                    // Collect files, handling unauthorized access and skipping certain directories
+                    foreach (var dir in Directory.EnumerateDirectories(currentFolder, "*", searchOption))
+                    {
+                        var dirName = new DirectoryInfo(dir).Name;
+                        if (!directoriesToSkip.Contains(dirName))
+                        {
+                            try
+                            {
+                                files.AddRange(Directory.EnumerateFiles(dir, "*.*", searchOption)
+                                    .Where(file => extensions.Any(ext => file.EndsWith(ext.Trim(), comparisonType))));
+                            }
+                            catch (UnauthorizedAccessException ex)
+                            {
+                                // Log or handle the exception as needed
+                                Console.WriteLine($"UnauthorizedAccessException accessing directory {dir}: {ex.Message}");
+                            }
+                            catch (Exception ex)
+                            {
+                                // Catch other potential exceptions
+                                Console.WriteLine($"Exception accessing directory {dir}: {ex.Message}");
+                            }
+                        }
+                    }
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    // Log or handle the exception as needed
+                    Console.WriteLine($"UnauthorizedAccessException: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    // Catch other potential exceptions
+                    Console.WriteLine($"Exception: {ex.Message}");
+                }
+
+                int verticalPosition = 10; // Initial vertical position for the first button
+
+                foreach (string file in files)
+                {
+                    try
+                    {
+                        string fileContent = File.ReadAllText(file);
+                        if (fileContent.IndexOf(searchString, comparisonType) >= 0)
+                        {
+                            // Normalize the path to ensure consistent use of backslashes
+                            string normalizedPath = Path.GetFullPath(file);
+
+                            string result = $"Found matching content in file: {normalizedPath}";
+                            searchResults.Add(result);
+
+                            // Create a button for this file
+                            Button openButton = new Button
+                            {
+                                Text = $"Open: {Path.GetFileName(file)}",
+                                Tag = normalizedPath, // Store the file path in the Tag
+                                AutoSize = true,
+                                Margin = new Padding(1),
+                                Location = new Point(1, verticalPosition) // Set the location dynamically
+                            };
+
+                            // Increment the vertical position for the next button
+                            verticalPosition += openButton.Height + 10; // Adjust spacing between buttons
+
+                            // Add click event to open directory and highlight the file
+                            openButton.Click += OpenButton_Click;
+
+                            // Add the button to the panel
+                            panelButtons.Controls.Add(openButton);
+                        }
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        // Log or handle the exception as needed
+                        Console.WriteLine($"UnauthorizedAccessException while reading file: {file}, Exception: {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Catch other potential exceptions
+                        Console.WriteLine($"Exception while reading file: {file}, Exception: {ex.Message}");
+                    }
+                }
+
+                // Adjust the scroll range of the panel based on the total height of the buttons
+                panelButtons.AutoScrollMinSize = new Size(0, verticalPosition);
+                consoleOutRichTextBox1.Text = string.Join(Environment.NewLine, searchResults);
+            }
+            else
+            {
+                string result = "Folder does not exist: " + currentFolder;
+                searchResults.Add(result);
+                consoleOutRichTextBox1.Text = result;
             }
         }
 
@@ -119,12 +281,21 @@ namespace Contents_Searcher
         {
             if (sender is Button button && button.Tag is string file)
             {
-                // Open the file's directory in File Explorer and optionally highlight the file
-                string args = $"/select,\"{file}\"";
-                Process.Start("explorer.exe", args);
+                // Log the file path to debug
+                Console.WriteLine($"Opening file: {file}");
 
-                // You could also open the file in a text editor
-                // Example: Process.Start("notepad.exe", $"{file}");
+                // Ensure the path is correctly enclosed in quotes
+                string args = $"/select,\"{file}\"";
+
+                try
+                {
+                    Process.Start("explorer.exe", args);
+                }
+                catch (Exception ex)
+                {
+                    // Handle or log the exception as needed
+                    MessageBox.Show($"Failed to open file: {ex.Message}");
+                }
             }
         }
 
@@ -148,6 +319,13 @@ namespace Contents_Searcher
         {
 
             fileTypes = fileTypesTextBox1.Text;
+        }
+
+        private void altSearchButton1_Click(object sender, EventArgs e)
+        {
+
+            SearchInFolderRootIncluded(folderPath);
+            consoleOutRichTextBox1.Text = string.Join(Environment.NewLine, searchResults);
         }
     }
 }
