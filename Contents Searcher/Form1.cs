@@ -32,38 +32,69 @@ namespace Contents_Searcher
 
         }
 
-
         private void SearchInFolder(string currentFolder)
         {
             searchResults.Clear(); // Clear previous search results
+            panelButtons.Controls.Clear(); // Clear previous buttons
 
             StringComparison comparisonType = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
             SearchOption searchOption = recursiveSearch ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
             if (Directory.Exists(currentFolder))
             {
-                // Split the fileTypes string into an array of file extensions
                 string[] extensions = fileTypes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                // Enumerate files in the directory that match the given extensions
                 string[] files = Directory.EnumerateFiles(currentFolder, "*.*", searchOption)
                     .Where(file => extensions.Any(ext => file.EndsWith(ext.Trim(), comparisonType)))
                     .ToArray();
+
+                int verticalPosition = 10; // Initial vertical position for the first button
 
                 foreach (string file in files)
                 {
                     string fileContent = File.ReadAllText(file);
                     if (fileContent.IndexOf(searchString, comparisonType) >= 0)
                     {
-                        result = "Found matching content in file: " + file;
+                        string result = $"Found matching content in file: {file}";
                         searchResults.Add(result);
+
+                        // Create a button for this file
+                        Button openButton = new Button
+                        {
+                            Text = $"Open: {Path.GetFileName(file)}",
+                            Tag = file, // Store the file path in the Tag
+                            AutoSize = true,
+                            Margin = new Padding(5),
+                            Location = new Point(10, verticalPosition) // Set the location dynamically
+                        };
+
+                        // Increment the vertical position for the next button
+                        verticalPosition += openButton.Height + 10; // Adjust spacing between buttons
+
+                        // Add click event to open directory and highlight the file
+                        openButton.Click += OpenButton_Click;
+
+                        // Add the button to the panel
+                        panelButtons.Controls.Add(openButton);
                     }
                 }
             }
             else
             {
-                result = "Folder does not exist: " + currentFolder;
+                string result = "Folder does not exist: " + currentFolder;
                 searchResults.Add(result);
+            }
+        }
+
+        private void OpenButton_Click(object sender, EventArgs e)
+        {
+            if (sender is Button button && button.Tag is string file)
+            {
+                // Open the file's directory in File Explorer and optionally highlight the file
+                string args = $"/select,\"{file}\"";
+                Process.Start("explorer.exe", args);
+
+                // You could also open the file in a text editor
+                // Example: Process.Start("notepad.exe", $"{file}");
             }
         }
 
