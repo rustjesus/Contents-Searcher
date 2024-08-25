@@ -173,6 +173,7 @@
             // 
             // progLabel
             // 
+            this.progLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.progLabel.AutoSize = true;
             this.progLabel.Location = new System.Drawing.Point(3, 514);
             this.progLabel.Name = "progLabel";
