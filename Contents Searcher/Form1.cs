@@ -27,9 +27,12 @@ namespace Contents_Searcher
         private string fileTypes = ".h,.cpp"; // Default file types to search, comma-separated
         private string result;
         private List<string> searchResults = new List<string>();
+
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            // Assuming you have already set up your Form and controls in the designer.
+            // Make sure the panel is set up with AutoScroll enabled.
+            panelButtons.AutoScroll = true;
         }
 
         private void SearchInFolder(string currentFolder)
@@ -63,8 +66,8 @@ namespace Contents_Searcher
                             Text = $"Open: {Path.GetFileName(file)}",
                             Tag = file, // Store the file path in the Tag
                             AutoSize = true,
-                            Margin = new Padding(5),
-                            Location = new Point(10, verticalPosition) // Set the location dynamically
+                            Margin = new Padding(1),
+                            Location = new Point(1, verticalPosition) // Set the location dynamically
                         };
 
                         // Increment the vertical position for the next button
@@ -77,6 +80,9 @@ namespace Contents_Searcher
                         panelButtons.Controls.Add(openButton);
                     }
                 }
+
+                // Adjust the scroll range of the panel based on the total height of the buttons
+                panelButtons.AutoScrollMinSize = new Size(0, verticalPosition);
             }
             else
             {
