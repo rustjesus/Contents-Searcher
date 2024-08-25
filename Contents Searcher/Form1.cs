@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace Contents_Searcher
 {
@@ -23,14 +24,15 @@ namespace Contents_Searcher
         private string searchString = ""; // The string to check for.
         private bool caseSensitive = false; // Toggle for case sensitivity
         private bool recursiveSearch = true; // Toggle for recursive searching
+        private string fileTypes = ".h,.cpp"; // Default file types to search, comma-separated
         private string result;
+        private List<string> searchResults = new List<string>();
         private void Form1_Load(object sender, EventArgs e)
         {
 
         }
 
-        private List<string> searchResults = new List<string>();
-        
+
         private void SearchInFolder(string currentFolder)
         {
             searchResults.Clear(); // Clear previous search results
@@ -40,9 +42,13 @@ namespace Contents_Searcher
 
             if (Directory.Exists(currentFolder))
             {
+                // Split the fileTypes string into an array of file extensions
+                string[] extensions = fileTypes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Enumerate files in the directory that match the given extensions
                 string[] files = Directory.EnumerateFiles(currentFolder, "*.*", searchOption)
-                        .Where(file => file.EndsWith(".h") || file.EndsWith(".cpp"))
-                        .ToArray();
+                    .Where(file => extensions.Any(ext => file.EndsWith(ext.Trim(), comparisonType)))
+                    .ToArray();
 
                 foreach (string file in files)
                 {
@@ -75,6 +81,12 @@ namespace Contents_Searcher
         {
             SearchInFolder(folderPath); 
             consoleOutRichTextBox1.Text = string.Join(Environment.NewLine, searchResults);
+        }
+
+        private void fileTypesTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+            fileTypes = fileTypesTextBox1.Text;
         }
     }
 }

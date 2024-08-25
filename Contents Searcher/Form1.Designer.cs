@@ -34,6 +34,9 @@
             this.searchStringTextBox1 = new System.Windows.Forms.TextBox();
             this.searchButton1 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
+            this.fileTypesTextBox1 = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // searchLocationBox1
@@ -47,7 +50,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 15);
+            this.label1.Location = new System.Drawing.Point(14, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(60, 13);
             this.label1.TabIndex = 1;
@@ -55,9 +58,9 @@
             // 
             // consoleOutRichTextBox1
             // 
-            this.consoleOutRichTextBox1.Location = new System.Drawing.Point(116, 76);
+            this.consoleOutRichTextBox1.Location = new System.Drawing.Point(93, 90);
             this.consoleOutRichTextBox1.Name = "consoleOutRichTextBox1";
-            this.consoleOutRichTextBox1.Size = new System.Drawing.Size(494, 335);
+            this.consoleOutRichTextBox1.Size = new System.Drawing.Size(517, 374);
             this.consoleOutRichTextBox1.TabIndex = 2;
             this.consoleOutRichTextBox1.Text = "";
             // 
@@ -71,7 +74,7 @@
             // 
             // searchButton1
             // 
-            this.searchButton1.Location = new System.Drawing.Point(12, 64);
+            this.searchButton1.Location = new System.Drawing.Point(12, 90);
             this.searchButton1.Name = "searchButton1";
             this.searchButton1.Size = new System.Drawing.Size(75, 23);
             this.searchButton1.TabIndex = 4;
@@ -88,11 +91,42 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "Search String:";
             // 
+            // fileTypesTextBox1
+            // 
+            this.fileTypesTextBox1.Location = new System.Drawing.Point(80, 64);
+            this.fileTypesTextBox1.Name = "fileTypesTextBox1";
+            this.fileTypesTextBox1.Size = new System.Drawing.Size(530, 20);
+            this.fileTypesTextBox1.TabIndex = 6;
+            this.fileTypesTextBox1.TextChanged += new System.EventHandler(this.fileTypesTextBox1_TextChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(16, 67);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(58, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "File Types:";
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(751, 477);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(37, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "v1.0.0";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 499);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.fileTypesTextBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.searchButton1);
             this.Controls.Add(this.searchStringTextBox1);
@@ -100,7 +134,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.searchLocationBox1);
             this.Name = "Form1";
-            this.Text = "CPP Contents Searcher";
+            this.Text = "Any File Contents Searcher";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -115,6 +149,9 @@
         private System.Windows.Forms.TextBox searchStringTextBox1;
         private System.Windows.Forms.Button searchButton1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox fileTypesTextBox1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
     }
 }
 
