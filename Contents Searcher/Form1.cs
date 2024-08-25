@@ -43,41 +43,65 @@ namespace Contents_Searcher
             StringComparison comparisonType = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
             SearchOption searchOption = recursiveSearch ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
+            // Define the directories to skip
+            var directoriesToSkip = new List<string>
+    {
+        "System Volume Information",
+        "Recycler",
+        "$RECYCLE.BIN"
+    };
+
             if (Directory.Exists(currentFolder))
             {
                 string[] extensions = fileTypes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                string[] files = Directory.EnumerateFiles(currentFolder, "*.*", searchOption)
-                    .Where(file => extensions.Any(ext => file.EndsWith(ext.Trim(), comparisonType)))
-                    .ToArray();
+                List<string> files = new List<string>();
+
+                try
+                {
+                    // Collect files, handling unauthorized access
+                    files.AddRange(Directory.EnumerateFiles(currentFolder, "*.*", searchOption)
+                        .Where(file => extensions.Any(ext => file.EndsWith(ext.Trim(), comparisonType))));
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Handle or log the exception as needed
+                }
 
                 int verticalPosition = 10; // Initial vertical position for the first button
 
                 foreach (string file in files)
                 {
-                    string fileContent = File.ReadAllText(file);
-                    if (fileContent.IndexOf(searchString, comparisonType) >= 0)
+                    try
                     {
-                        string result = $"Found matching content in file: {file}";
-                        searchResults.Add(result);
-
-                        // Create a button for this file
-                        Button openButton = new Button
+                        string fileContent = File.ReadAllText(file);
+                        if (fileContent.IndexOf(searchString, comparisonType) >= 0)
                         {
-                            Text = $"Open: {Path.GetFileName(file)}",
-                            Tag = file, // Store the file path in the Tag
-                            AutoSize = true,
-                            Margin = new Padding(1),
-                            Location = new Point(1, verticalPosition) // Set the location dynamically
-                        };
+                            string result = $"Found matching content in file: {file}";
+                            searchResults.Add(result);
 
-                        // Increment the vertical position for the next button
-                        verticalPosition += openButton.Height + 10; // Adjust spacing between buttons
+                            // Create a button for this file
+                            Button openButton = new Button
+                            {
+                                Text = $"Open: {Path.GetFileName(file)}",
+                                Tag = file, // Store the file path in the Tag
+                                AutoSize = true,
+                                Margin = new Padding(1),
+                                Location = new Point(1, verticalPosition) // Set the location dynamically
+                            };
 
-                        // Add click event to open directory and highlight the file
-                        openButton.Click += OpenButton_Click;
+                            // Increment the vertical position for the next button
+                            verticalPosition += openButton.Height + 10; // Adjust spacing between buttons
 
-                        // Add the button to the panel
-                        panelButtons.Controls.Add(openButton);
+                            // Add click event to open directory and highlight the file
+                            openButton.Click += OpenButton_Click;
+
+                            // Add the button to the panel
+                            panelButtons.Controls.Add(openButton);
+                        }
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        // Handle or log the exception as needed
                     }
                 }
 
