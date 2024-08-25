@@ -41,6 +41,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.altSearchButton1 = new System.Windows.Forms.Button();
+            this.resultsCountLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // searchLocationBox1
@@ -117,7 +118,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(898, 466);
+            this.label4.Location = new System.Drawing.Point(898, 543);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 8;
@@ -144,7 +145,7 @@
             // progressBar1
             // 
             this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.progressBar1.Location = new System.Drawing.Point(3, 469);
+            this.progressBar1.Location = new System.Drawing.Point(3, 546);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(607, 10);
             this.progressBar1.TabIndex = 12;
@@ -159,11 +160,22 @@
             this.altSearchButton1.UseVisualStyleBackColor = true;
             this.altSearchButton1.Click += new System.EventHandler(this.altSearchButton1_Click);
             // 
+            // resultsCountLabel
+            // 
+            this.resultsCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.resultsCountLabel.AutoSize = true;
+            this.resultsCountLabel.Location = new System.Drawing.Point(0, 530);
+            this.resultsCountLabel.Name = "resultsCountLabel";
+            this.resultsCountLabel.Size = new System.Drawing.Size(102, 13);
+            this.resultsCountLabel.TabIndex = 14;
+            this.resultsCountLabel.Text = "Results: 324325345";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(947, 488);
+            this.ClientSize = new System.Drawing.Size(947, 565);
+            this.Controls.Add(this.resultsCountLabel);
             this.Controls.Add(this.altSearchButton1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.label5);
@@ -200,6 +212,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button altSearchButton1;
+        private System.Windows.Forms.Label resultsCountLabel;
     }
 }
 

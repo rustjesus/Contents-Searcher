@@ -25,18 +25,29 @@ namespace Contents_Searcher
         private bool caseSensitive = false; // Toggle for case sensitivity
         private bool recursiveSearch = true; // Toggle for recursive searching
         private string fileTypes = ".h,.cpp,.txt,.cs,.py"; // Default file types to search, comma-separated
-        private string result;
+        private int results;
         private List<string> searchResults = new List<string>();
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            results = 0;
+            resultsCountLabel.Text = "Results = " + results;
             fileTypesTextBox1.Text = fileTypes;
             // Assuming you have already set up your Form and controls in the designer.
             // Make sure the panel is set up with AutoScroll enabled.
             panelButtons.AutoScroll = true;
         }
+        private void UpdateProgressBar(int currentValue, int maxValue)
+        {
+            progressBar1.Minimum = 0;
+            progressBar1.Maximum = maxValue;
+            progressBar1.Value = currentValue;
+        }
+
         private void SearchInFolderRootIncluded(string currentFolder)
         {
+            results = 0;
+            resultsCountLabel.Text = "Results = " + results;
             searchResults.Clear(); // Clear previous search results
             panelButtons.Controls.Clear(); // Clear previous buttons
 
@@ -117,6 +128,8 @@ namespace Contents_Searcher
                             string result = $"Found matching content in file: {normalizedPath}";
                             searchResults.Add(result);
 
+                            results++;
+                            resultsCountLabel.Text = "Results = " + results;
                             // Create a button for this file
                             Button openButton = new Button
                             {
@@ -160,8 +173,10 @@ namespace Contents_Searcher
                 consoleOutRichTextBox1.Text = result;
             }
         }
-        private void SearchInFolder(string currentFolder)
+        private void SearchInFolderDeep(string currentFolder)
         {
+            results = 0;
+            resultsCountLabel.Text = "Results = " + results;
             searchResults.Clear(); // Clear previous search results
             panelButtons.Controls.Clear(); // Clear previous buttons
 
@@ -233,6 +248,8 @@ namespace Contents_Searcher
                             string result = $"Found matching content in file: {normalizedPath}";
                             searchResults.Add(result);
 
+                            results++;
+                            resultsCountLabel.Text = "Results = " + results;
                             // Create a button for this file
                             Button openButton = new Button
                             {
@@ -311,7 +328,7 @@ namespace Contents_Searcher
 
         private void searchButton1_Click(object sender, EventArgs e)
         {
-            SearchInFolder(folderPath); 
+            SearchInFolderDeep(folderPath); 
             consoleOutRichTextBox1.Text = string.Join(Environment.NewLine, searchResults);
         }
 
