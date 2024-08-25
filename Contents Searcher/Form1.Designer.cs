@@ -116,7 +116,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 8;
-            this.label4.Text = "v1.0.0";
+            this.label4.Text = "v1.0.1";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Form1
