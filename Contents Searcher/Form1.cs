@@ -30,14 +30,38 @@ namespace Contents_Searcher
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            LoadSettings();
             progLabel.Text = "Waiting.";
             results = 0;
             resultsCountLabel.Text = "Results = " + results;
             fileTypesTextBox1.Text = fileTypes;
-            // Assuming you have already set up your Form and controls in the designer.
-            // Make sure the panel is set up with AutoScroll enabled.
             panelButtons.AutoScroll = true;
         }
+        private void LoadSettings()
+        {
+            // Define the path to your settings file (full path to the Debug directory)
+            string settingsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.txt");
+
+            string fileTypesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "filetypes.txt");
+            // Check if the file exists before attempting to read it
+            if (File.Exists(settingsFilePath))
+            {
+                // Read the folder path from the settings file
+                string loadedFolderPath = File.ReadAllText(settingsFilePath).Trim();
+
+                // Set the folderPath and update the textbox with the loaded value
+                folderPath = loadedFolderPath;
+                searchLocationBox1.Text = folderPath;
+
+            }
+            if (File.Exists(fileTypesPath))
+            {
+                // Read the folder path from the settings file
+                string loadedFolderPath = File.ReadAllText(fileTypesPath).Trim();
+                fileTypes = loadedFolderPath;
+            }
+        }
+
         private void UpdateProgressBar(int currentValue, int maxValue)
         {
             progressBar1.Minimum = 0;
@@ -57,11 +81,11 @@ namespace Contents_Searcher
 
             // Define the directories to skip
             var directoriesToSkip = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-    {
-        "System Volume Information",
-        "Recycler",
-        "$RECYCLE.BIN"
-    };
+            {
+                "System Volume Information",
+                "Recycler",
+                "$RECYCLE.BIN"
+            };
 
             if (Directory.Exists(currentFolder))
             {
@@ -326,8 +350,22 @@ namespace Contents_Searcher
 
         private void searchLocationBox1_TextChanged(object sender, EventArgs e)
         {
-            folderPath = searchLocationBox1.Text;
+            folderPath = searchLocationBox1.Text;  // Update the folder path from the text box
+
+            // Define the path to your settings file (you can also make this dynamic based on the project's location)
+            string settingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "settings.txt");
+
+            try
+            {
+                // Write the folderPath to the settings.txt file
+                File.WriteAllText(settingsFilePath, folderPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving settings: {ex.Message}");
+            }
         }
+
 
         private void searchStringTextBox1_TextChanged(object sender, EventArgs e)
         {
